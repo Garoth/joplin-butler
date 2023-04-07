@@ -7,6 +7,8 @@ import (
 	"os"
 
 	"github.com/Garoth/joplin-butler/endpoints"
+	"github.com/Garoth/joplin-butler/types"
+	"github.com/Garoth/joplin-butler/utils"
 )
 
 func main() {
@@ -26,6 +28,19 @@ func main() {
 		if err := endpoints.Auth(); err != nil {
 			log.Println("ERR:", err)
 		}
+	case "notes":
+		if err := endpoints.Auth(); err != nil {
+			log.Println("ERR:", err)
+		}
+		notesStr, err := utils.GetPath("notes")
+		if err != nil {
+			log.Println("ERR:", err)
+		}
+		notes, err := types.NewPaginated[types.Note](notesStr)
+		if err != nil {
+			log.Println("ERR:", err)
+		}
+		log.Println("NOTES:", notes)
 
 	default:
 		printHelp()
