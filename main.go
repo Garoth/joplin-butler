@@ -45,7 +45,11 @@ func main() {
 		}
 		fmt.Println(notes)
 	case "note":
-		notesStr, err := utils.GetPath("notes/1b16f5bfd4854f1f98345ef3d5dcc8c3" +
+		if len(os.Args) < 3 {
+			log.Fatalln("ERR: must have more parameters for note lookup")
+		}
+		targetNote := os.Args[2]
+		notesStr, err := utils.GetPath("notes/" + targetNote +
 			"?fields=id,title,parent_id,created_time,updated_time,source,body")
 		if err != nil {
 			log.Fatalln("ERR:", err)
