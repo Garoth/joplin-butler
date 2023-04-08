@@ -1,6 +1,7 @@
 package types
 
 import (
+	"fmt"
 	"encoding/json"
 )
 
@@ -25,4 +26,16 @@ func NewPaginated[P Paginateable](jsonStr string) (*Paginated[P], error) {
 	}
 
 	return me, nil
+}
+
+func (me *Paginated[P]) String() string {
+	output := ""
+	for i, item := range me.Items {
+		if i == len(me.Items) - 1 {
+			output += fmt.Sprintf("%v", item)
+		} else {
+			output += fmt.Sprintf("%v\n", item)
+		}
+	}
+	return output
 }

@@ -2,7 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -43,7 +43,7 @@ func (me *Config) Save() error {
 		return err
 	}
 
-	fmt.Println("Configuration saved:", configPath)
+	log.Println("Configuration saved:", configPath)
 	return nil
 }
 
@@ -66,6 +66,6 @@ func (me *Config) Load() error {
 		return err
 	}
 
-	fmt.Println("Configuration loaded:", configPath)
+	log.Println("Configuration loaded:", configPath)
 	return nil
 }

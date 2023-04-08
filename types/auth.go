@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -25,8 +24,6 @@ type AuthCheck struct {
 }
 
 func (me *AuthCheck) UnmarshalJSON(b []byte) error {
-	log.Println("AUTHCHECK:", string(b))
-
 	tmpType := struct {
 		Status string
 		Token  string
