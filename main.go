@@ -78,6 +78,10 @@ func main() {
 func printHelp() {
 	fmt.Println("Available Subcommands:\n" +
 		"   - auth\n" +
+		"   - get\n" +
+		"   - describe (WIP)\n" +
+		"   - edit (WIP)\n" +
+		"   - delete (WIP)\n" +
 		"   - help")
 }
 
@@ -111,18 +115,31 @@ func parseItemTypeAndName(args []string) (types.ItemTypeID, string, error) {
 }
 
 func listNotes() (*types.Paginated[types.Note], error) {
-	res, err := utils.GetPath("notes")
-	err = types.CheckError(res, err)
-	if err != nil {
-		return nil, err
+	allItems := &types.Paginated[types.Note]{
+		Items: []types.Note{},
+		HasMore: false,
 	}
 
-	items, err := types.NewPaginated[types.Note](res)
-	if err != nil {
-		return nil, err
+	for page := 1; ; page++{
+		res, err := utils.GetPath(utils.AppendQueryStringToPath("notes", "page", page))
+		err = types.CheckError(res, err)
+		if err != nil {
+			return nil, err
+		}
+
+		items, err := types.NewPaginated[types.Note](res)
+		if err != nil {
+			return nil, err
+		}
+
+		allItems.Items = append(allItems.Items, items.Items...)
+
+		if !items.HasMore {
+			break
+		}
 	}
 
-	return items, nil
+	return allItems, nil
 }
 
 // For non-note item types, we can query them by title using search

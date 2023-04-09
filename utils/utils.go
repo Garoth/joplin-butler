@@ -86,10 +86,13 @@ func appendAPITokenToPath(path string) string {
 	if API_TOKEN == "" {
 		return path
 	}
+	return AppendQueryStringToPath(path, "token", API_TOKEN)
+}
+
+func AppendQueryStringToPath(path, query string, value any) string {
+	startChar := "?"
 	if strings.Contains(path, "?") {
-		path += "&token=" + API_TOKEN
-	} else {
-		path += "?token=" + API_TOKEN
+		startChar = "&"
 	}
-	return path
+	return fmt.Sprintf("%s%s%s=%v", path, startChar, query, value)
 }
