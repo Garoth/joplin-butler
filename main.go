@@ -33,73 +33,39 @@ func main() {
 	switch os.Args[1] {
 	case "auth":
 		authSet.Parse(os.Args[2:])
-		os.Exit(1)
+		os.Exit(0)
 
 	case "get":
-		if len(os.Args) < 3 {
-			printHelp()
-			os.Exit(1)
+		itemTypeID, itemName, err := parseItemTypeAndName(os.Args)
+		if err != nil  {
+			log.Fatalln("ERR:", err)
 		}
 
-		itemTypeStr := os.Args[2]
-		itemId := ""
-		if strings.Contains(itemTypeStr, "/") {
-			parts := strings.Split(itemTypeStr, "/")
-			itemTypeStr = parts[0]
-			itemId = parts[1]
-		} else if len(os.Args) >= 4 {
-			itemId = os.Args[3]
-		}
-
-		itemTypeID, err := types.NewItemTypeID(itemTypeStr)
-		if err != nil {
-			// try again without the last character which might be an 's'
-			var err2 error
-			itemTypeID, err2 = types.NewItemTypeID(itemTypeStr[0 : len(itemTypeStr)-1])
-			if err2 != nil {
+		if itemTypeID == types.ItemTypeNote  && itemName == "" {
+			items, err := listNotes()
+			if err != nil {
 				log.Fatalln("ERR:", err)
 			}
-		}
-
-		// Query string is handled differently for non-note types, and
-		// we need to use the wildcard to search for all
-		if itemTypeID != types.ItemTypeNote && itemId == "" {
-			itemId = "*"
-		}
-		res, err := utils.GetPath("search?query=" + itemId +
-			"&type=" + itemTypeID.String())
-		if err != nil {
-			log.Fatalln("ERR:", err)
-		}
-		jsonErr, err := types.NewError(res)
-		if err == nil {
-			log.Fatalln("ERR:", jsonErr)
-		}
-
-		log.Println("type", itemId, itemTypeID)
-
-		items, err := types.NewPaginated[types.ItemInfo](res)
-		if err != nil {
-			log.Fatalln("ERR:", err)
-		}
-		fmt.Println(items)
-
-	case "note":
-		if len(os.Args) < 3 {
-			log.Fatalln("ERR: must have more parameters for note lookup")
-		}
-		targetNote := os.Args[2]
-		notesStr, err := utils.GetPath("notes/" + targetNote +
+			fmt.Println(items)
+		} else if itemTypeID == types.ItemTypeNote  && itemName != "" {
+			notesStr, err := utils.GetPath("notes/" + itemName +
 			"?fields=id,title,parent_id,created_time,updated_time,source,body")
-		if err != nil {
-			log.Fatalln("ERR:", err)
+			if err != nil {
+				log.Fatalln("ERR:", err)
+			}
+			var note types.Note
+			err = json.Unmarshal([]byte(notesStr), &note)
+			if err != nil {
+				log.Fatalln("ERR:", err)
+			}
+			fmt.Println(note.DetailedString())
+		} else {
+			items, err := queryItemType(itemTypeID, itemName)
+			if err != nil {
+				log.Fatalln("ERR:", err)
+			}
+			fmt.Println(items)
 		}
-		var note types.Note
-		err = json.Unmarshal([]byte(notesStr), &note)
-		if err != nil {
-			log.Fatalln("ERR:", err)
-		}
-		fmt.Println(note.DetailedString())
 
 	default:
 		printHelp()
@@ -113,4 +79,73 @@ func printHelp() {
 	fmt.Println("Available Subcommands:\n" +
 		"   - auth\n" +
 		"   - help")
+}
+
+// Parses an item spec like "tag/address" or "tags" or "tag address"
+func parseItemTypeAndName(args []string) (types.ItemTypeID, string, error) {
+	if len(args) < 3 {
+		return types.ItemTypeNone, "", fmt.Errorf("not enough arguments")
+	}
+
+	itemTypeStr := args[2]
+	itemName := ""
+	if strings.Contains(itemTypeStr, "/") {
+		parts := strings.Split(itemTypeStr, "/")
+		itemTypeStr = parts[0]
+		itemName = parts[1]
+	} else if len(args) >= 4 {
+		itemName = args[3]
+	}
+
+	itemTypeID, err := types.NewItemTypeID(itemTypeStr)
+	if err != nil {
+		// try again without the last character which might be an 's'
+		var err2 error
+		itemTypeID, err2 = types.NewItemTypeID(itemTypeStr[0 : len(itemTypeStr)-1])
+		if err2 != nil {
+			return types.ItemTypeNone, "", err
+		}
+	}
+
+	return itemTypeID, itemName, nil
+}
+
+func listNotes() (*types.Paginated[types.Note], error) {
+	res, err := utils.GetPath("notes")
+	err = types.CheckError(res, err)
+	if err != nil {
+		return nil, err
+	}
+
+	items, err := types.NewPaginated[types.Note](res)
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+// For non-note item types, we can query them by title using search
+func queryItemType(itemTypeID types.ItemTypeID,
+	itemName string) (*types.Paginated[types.ItemInfo], error) {
+
+	// Query string is handled differently for non-note types, and
+	// we need to use the wildcard to search for all
+	if itemTypeID != types.ItemTypeNote && itemName == "" {
+		itemName = "*"
+	}
+	query := "search?query=" + itemName + "&type=" + itemTypeID.String()
+	log.Println("Query:", query)
+	res, err := utils.GetPath(query)
+	err = types.CheckError(res, err)
+	if err != nil {
+		return nil, err
+	}
+
+	items, err := types.NewPaginated[types.ItemInfo](res)
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
 }

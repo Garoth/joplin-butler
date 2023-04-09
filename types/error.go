@@ -35,3 +35,15 @@ func (me *Error) Error() string {
 		strings.ReplaceAll(
 			me.ErrorLines[0], "Internal Server Error: ", ""), ": ")
 }
+
+// Checks both API level and JSON-based error messages, merges them together
+func CheckError(json string, err error) error {
+	if err != nil {
+		return err
+	}
+	jsonErr, err := NewError(json)
+	if err == nil {
+		return fmt.Errorf("%s", jsonErr.Error())
+	}
+	return nil
+}
