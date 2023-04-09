@@ -96,3 +96,10 @@ func AppendQueryStringToPath(path, query string, value any) string {
 	}
 	return fmt.Sprintf("%s%s%s=%v", path, startChar, query, value)
 }
+
+func AppendQueryStringsToPath(path string, queries map[string]any) string {
+	for query, value := range queries {
+		path = AppendQueryStringToPath(path, query, value)
+	}
+	return path
+}

@@ -120,7 +120,7 @@ func listNotes() (*types.Paginated[types.Note], error) {
 		HasMore: false,
 	}
 
-	for page := 1; ; page++{
+	for page := 1; ; page++ {
 		res, err := utils.GetPath(utils.AppendQueryStringToPath("notes", "page", page))
 		err = types.CheckError(res, err)
 		if err != nil {
@@ -146,23 +146,38 @@ func listNotes() (*types.Paginated[types.Note], error) {
 func queryItemType(itemTypeID types.ItemTypeID,
 	itemName string) (*types.Paginated[types.ItemInfo], error) {
 
-	// Query string is handled differently for non-note types, and
-	// we need to use the wildcard to search for all
-	if itemTypeID != types.ItemTypeNote && itemName == "" {
+	if itemName == "" {
 		itemName = "*"
 	}
-	query := "search?query=" + itemName + "&type=" + itemTypeID.String()
-	log.Println("Query:", query)
-	res, err := utils.GetPath(query)
-	err = types.CheckError(res, err)
-	if err != nil {
-		return nil, err
+	allItems := &types.Paginated[types.ItemInfo]{
+		Items: []types.ItemInfo{},
+		HasMore: false,
 	}
 
-	items, err := types.NewPaginated[types.ItemInfo](res)
-	if err != nil {
-		return nil, err
+	for page := 1; ; page++ {
+		query := utils.AppendQueryStringsToPath("search", map[string]any{
+			"query": itemName,
+			"type": itemTypeID.String(),
+			"page": page,
+		})
+		log.Println("Query:", query)
+		res, err := utils.GetPath(query)
+		err = types.CheckError(res, err)
+		if err != nil {
+			return nil, err
+		}
+
+		items, err := types.NewPaginated[types.ItemInfo](res)
+		if err != nil {
+			return nil, err
+		}
+
+		allItems.Items = append(allItems.Items, items.Items...)
+
+		if !items.HasMore {
+			break
+		}
 	}
 
-	return items, nil
+	return allItems, nil
 }
