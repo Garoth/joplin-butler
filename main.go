@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/Garoth/joplin-butler/endpoints"
 	"github.com/Garoth/joplin-butler/types"
@@ -17,7 +17,7 @@ func main() {
 	log.SetFlags(log.Ltime | log.Lmsgprefix)
 	log.SetPrefix("> ")
 	// TODO:lung:2023-04-07 create a flag to disable debug output
-	log.SetOutput(ioutil.Discard)
+	// log.SetOutput(ioutil.Discard)
 
 	authSet := flag.NewFlagSet("auth", flag.ExitOnError)
 
@@ -34,16 +34,56 @@ func main() {
 	case "auth":
 		authSet.Parse(os.Args[2:])
 		os.Exit(1)
-	case "notes":
-		notesStr, err := utils.GetPath("notes")
+
+	case "get":
+		if len(os.Args) < 3 {
+			printHelp()
+			os.Exit(1)
+		}
+
+		itemTypeStr := os.Args[2]
+		itemId := ""
+		if strings.Contains(itemTypeStr, "/") {
+			parts := strings.Split(itemTypeStr, "/")
+			itemTypeStr = parts[0]
+			itemId = parts[1]
+		} else if len(os.Args) >= 4 {
+			itemId = os.Args[3]
+		}
+
+		itemTypeID, err := types.NewItemTypeID(itemTypeStr)
+		if err != nil {
+			// try again without the last character which might be an 's'
+			var err2 error
+			itemTypeID, err2 = types.NewItemTypeID(itemTypeStr[0 : len(itemTypeStr)-1])
+			if err2 != nil {
+				log.Fatalln("ERR:", err)
+			}
+		}
+
+		// Query string is handled differently for non-note types, and
+		// we need to use the wildcard to search for all
+		if itemTypeID != types.ItemTypeNote && itemId == "" {
+			itemId = "*"
+		}
+		res, err := utils.GetPath("search?query=" + itemId +
+			"&type=" + itemTypeID.String())
 		if err != nil {
 			log.Fatalln("ERR:", err)
 		}
-		notes, err := types.NewPaginated[types.Note](notesStr)
+		jsonErr, err := types.NewError(res)
+		if err == nil {
+			log.Fatalln("ERR:", jsonErr)
+		}
+
+		log.Println("type", itemId, itemTypeID)
+
+		items, err := types.NewPaginated[types.ItemInfo](res)
 		if err != nil {
 			log.Fatalln("ERR:", err)
 		}
-		fmt.Println(notes)
+		fmt.Println(items)
+
 	case "note":
 		if len(os.Args) < 3 {
 			log.Fatalln("ERR: must have more parameters for note lookup")

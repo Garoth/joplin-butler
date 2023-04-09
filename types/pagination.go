@@ -6,7 +6,7 @@ import (
 )
 
 type Paginateable interface {
-	Note | Notebook
+	ItemInfo | Note | Notebook
 }
 
 type Paginated[P Paginateable] struct {
