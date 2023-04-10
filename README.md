@@ -3,8 +3,7 @@
 WARNING: Alpha version of the codebase
 
 This provides a convenient wrapper around the Joplin WebClipper/Data Service:
-
-    https://joplinapp.org/api/references/rest_api/
+https://joplinapp.org/api/references/rest_api/
 
 Motivation: the Joplin terminal app requires full sync, so it's not very
 convenient for quick Joplin scripting. Joplin has a more convenient API
@@ -33,7 +32,6 @@ versions of the notes that show metadata and content
     - I'd agree with you but then we would both be wrong
     - If you were any less intelligent you would have to be watered twice a day.
     - Your IQ does not even make a respectable earthquake.
-    - Somewhere a tree is making oxygen for you. You should apologize to it.
 
     ID: 6b2795f324154e33b3d2088625f44c66
     Title: Localization and Plurals - MDN
@@ -45,23 +43,49 @@ versions of the notes that show metadata and content
     Introduced in Gecko 1.9
     (Firefox 3)
 
-    You're likely here because you're localizing a .properties file and it had a link to this page. This page is to
-     help explain how to localize these strings so that the correct plural form is shown to the user. E.g., "1 page
-    " vs "2 pages".
+    You're likely here because you're localizing a .properties file and it had
+    a link to this page. This page is to help explain how to localize these
+    strings so that the correct plural form is shown to the user. E.g., "1 page"
+    vs "2 pages" ...
 
-    If you're here to make your code (e.g., extensions) localizable for plural forms, you can jump straight to [Dev
-    eloping with PluralForm](https://developer.mozilla.org/en/#Developing_with_PluralForm), but you'll likely need 
-    to localize the initial strings for your code, so it would be good to read through at least the Usage section a
-    s well.
+Create a note with title and markdown body:
+
+    > joplin-butler create note "My CLI Joplin Dream" -body "Begins today :D"
+
+    ID: 50fe5cf5dc6f4070a11c869cd4ec0138
+    Title: My CLI Joplin dream
+    ParentID: 1d4c4899bc7d4df4ad45cd575ac30043
+    CreatedTime: 1681088397617
+    UpdatedTime: 1681088397617
+    Source: joplin-desktop
+    ---
+    Begins today :D
+
+Delete a note:
+
+    > joplin-butler delete note/50fe5cf5dc6f4070a11c869cd4ec0138
+
+    Successfully deleted notes/50fe5cf5dc6f4070a11c869cd4ec0138
+
+## Development
+
+The following commands put Go into the correct modules mode:
+
+    export GO111MODULE=on
+    export GOPATH=
+
+Then `go run main.go` should work
 
 ## Current Status
 
  * Automated authentication flow that pops up a dialog in Joplin
  * Configuration is saved to `~/.joplin-butler/config.json`
  * Can fetch the all-notes list and inspect individual notes
+ * Can create items like notes, folders, tags
+ * Can delete items like notes, folders, tags
 
 ## TODO
 
- * First, implementing low-level raw access APIs for REST
- * Second, implementing higher level abstractions and conveniences
- * Third, providing useful high level scripts
+ * Filters for which metadata to get about items
+ * Attaching,Removing: attachments, tags, etc
+ * Editing items, notes

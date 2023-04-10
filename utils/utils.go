@@ -51,6 +51,26 @@ func GetPath(path string) (string, error) {
 	return getPortPath(FOUND_PORT, path)
 }
 
+func DeletePath(path string) (string, error) {
+	fullPath := appendAPITokenToPath(fmt.Sprintf("%s:%d/%s", SERVER_PATH, FOUND_PORT, path))
+	req, err := http.NewRequest("DELETE", fullPath, nil)
+	if err != nil {
+		return "", err
+	}
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	defer resp.Body.Close()
+	if err != nil {
+		return "", err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return string(body), nil
+}
+
 func PostPath(path, query string) (string, error) {
 	data := strings.NewReader(query)
 	fullPath := appendAPITokenToPath(fmt.Sprintf("%s:%d/%s", SERVER_PATH, FOUND_PORT, path))

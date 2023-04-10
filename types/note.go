@@ -21,7 +21,7 @@ type Note struct {
 	Source               string `json:"source"`
 	SourceApplication    string `json:"source_application"`
 	ApplicationData      string `json:"application_data"`
-	Order                string `json:"order"`
+	Order                int    `json:"order"`
 	UserCreatedTime      int    `json:"user_created_time"`
 	UserUpdatedTime      int    `json:"user_updated_time"`
 	EncryptionCipherText string `json:"encryption_cipher_text"`
