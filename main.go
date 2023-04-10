@@ -62,6 +62,21 @@ func main() {
 				log.Fatalln("ERR:", err)
 			}
 			fmt.Println(note.DetailedString())
+		} else if itemTypeID == types.ItemTypeFolder && itemName != ""{
+			foldersStr, err := utils.GetPath("folders/" + itemName +
+			"?fields=id,title,created_time,updated_time,user_created_time," +
+			"user_updated_time,encryption_cipher_text,encryption_applied," +
+			"parent_id,is_shared,share_id,master_key_id,icon")
+
+			if err != nil {
+				log.Fatalln("ERR:", err)
+			}
+			var folder types.Folder
+			err = json.Unmarshal([]byte(foldersStr), &folder)
+			if err != nil {
+				log.Fatalln("ERR:", err)
+			}
+			fmt.Println(folder.DetailedString())
 		} else {
 			items, err := queryItemType(itemTypeID, itemName)
 			if err != nil {
