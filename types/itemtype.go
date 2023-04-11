@@ -74,5 +74,13 @@ type ItemInfo struct {
 }
 
 func (me ItemInfo) String() string {
-	return me.ID + " " + me.Title + " " + me.ParentID
+	return me.ID + " " + me.Title
+}
+
+func (me ItemInfo) DetailedString() string {
+	out := fmt.Sprintf("ID: %v\n"+
+		"Title: %v\n"+
+		"ParentID: %v"+
+		me.ID, me.Title, me.ParentID)
+	return out
 }

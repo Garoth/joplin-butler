@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"path"
 
 	"github.com/Garoth/joplin-butler/endpoints"
 	"github.com/Garoth/joplin-butler/types"
@@ -90,6 +91,9 @@ func main() {
 		if err != nil  {
 			log.Fatalln("ERR:", err)
 		}
+		if itemName == "" {
+			log.Fatalln("ERR: create requires another argument")
+		}
 		createSet.Parse(remArgs)
 
 		switch itemTypeID {
@@ -115,6 +119,20 @@ func main() {
 			}
 			fmt.Println(note.DetailedString())
 
+		case types.ItemTypeResource:
+			filename := path.Base(itemName)
+			res, err := utils.FileFormPath("resources", filename, itemName)
+			err = types.CheckError(res, err)
+			if err != nil {
+				log.Fatalln("ERR:", err)
+			}
+			resource := &types.Resource{}
+			err = json.Unmarshal([]byte(res), resource)
+			if err != nil  {
+				log.Fatalln("ERR:", err)
+			}
+			fmt.Println(resource.DetailedString())
+
 		default:
 			endpoint := itemTypeID.String() + "s"
 			res, err := utils.PostPath(endpoint,
@@ -129,7 +147,7 @@ func main() {
 				log.Fatalln("ERR:", err)
 			}
 			log.Printf("Successfully created '%s/%s'", endpoint, itemName)
-			fmt.Println(item.String())
+			fmt.Println(item.DetailedString())
 		}
 
 	case "delete":
