@@ -1,6 +1,9 @@
 # Joplin Butler: CLI Joplin Automation Tools
 
-WARNING: Alpha version of the codebase
+<img width="400" src="https://github.com/Garoth/joplin-butler/blob/master/docs/img/note-butler-ai?raw=true" />
+(Yes it's Midjourney art of a note taking butler :p)
+
+WARNING: Beta version of the codebase
 
 This provides a convenient wrapper around the Joplin WebClipper/Data Service:
 https://joplinapp.org/api/references/rest_api/
@@ -52,7 +55,7 @@ Create a note with title, resource, notebook (parent folder), and markdown body:
 
 The above code created the following note in Joplin Desktop instantly:
 
-<img width="300" src="https://github.com/Garoth/joplin-butler/blob/master/docs/img/demo-note-1.png?raw=true" />
+<img width="400" src="https://github.com/Garoth/joplin-butler/blob/master/docs/img/demo-note-1.png?raw=true" />
 
 Here we read the first two notes in the note list, and download detailed
 versions of the notes that show metadata and content
