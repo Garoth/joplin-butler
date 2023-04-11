@@ -24,6 +24,7 @@ func main() {
 	createSet := flag.NewFlagSet("create", flag.ExitOnError)
 	createBody := createSet.String("body", "", "For notes, the markdown body")
 	createHTMLBody := createSet.String("body_html", "", "For notes, the html body")
+	createParent := createSet.String("parent", "", "Item ParentID. For notes, use notebook/folder ID")
 
 	if len(os.Args) < 2 {
 		printHelp()
@@ -104,6 +105,9 @@ func main() {
 			}
 			if *createHTMLBody != "" {
 				dataJson += ", \"body_html\": \"" + *createHTMLBody + "\""
+			}
+			if *createParent != "" {
+				dataJson += ", \"parent_id\": \"" + *createParent + "\""
 			}
 			dataJson += " }"
 

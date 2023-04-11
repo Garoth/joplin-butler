@@ -13,6 +13,47 @@ tools for Joplin Desktop
 
 ## Example
 
+Create a note with title, resource, notebook (parent folder), and markdown body:
+
+    > joplin-butler create resource ~/Downloads/Big\ airship/NE/still/still\ only0003.png
+
+    ID: b8a8f3b5249943ca95aa0571bd905766
+    Title: still only0003.png
+    Filename: 
+    CreatedTime: 1681174988187
+    UpdatedTime: 1681174988187
+    UserCreatedTime: 1681174988187
+    UserUpdatedTime: 1681174988187
+    Size: 1068527
+    IsShared: 0
+
+    > joplin-butler get folders
+
+    269afae798c445fda34a2817cb0a96ea AE Misc
+    4216484946714902922c15b075d39e28 Frequent
+    dc80329d7b694117850e21556d59ddc7 Huge Lung
+    029466b3d52f4cf2bf3aaab11ade8e40 Ideas
+    a95cab228a9d4f118d4ad2c0a1b1adc5 Travel
+
+    > joplin-butler create note 'My CLI Joplin Dream' \
+        -body 'Begins today :D\n\n ![airship](:/b8a8f3b5249943ca95aa0571bd905766)' \
+        -parent '269afae798c445fda34a2817cb0a96ea'
+
+    ID: acd2cc52a6444e42a163fcefe94464d7
+    Title: My CLI Joplin Dream
+    ParentID: 1d4c4899bc7d4df4ad45cd575ac30043
+    CreatedTime: 1681175174105
+    UpdatedTime: 1681175174105
+    Source: joplin-desktop
+    ---
+    Begins today :D
+
+     ![airship](:/b8a8f3b5249943ca95aa0571bd905766)
+
+The above code created the following note in Joplin Desktop instantly:
+
+![sample-note-1](https://github.com/Garoth/joplin-butler/blob/master/docs/img/demo-note-1.png?raw=true)
+
 Here we read the first two notes in the note list, and download detailed
 versions of the notes that show metadata and content
 
@@ -48,18 +89,6 @@ versions of the notes that show metadata and content
     strings so that the correct plural form is shown to the user. E.g., "1 page"
     vs "2 pages" ...
 
-Create a note with title and markdown body:
-
-    > joplin-butler create note "My CLI Joplin Dream" -body "Begins today :D"
-
-    ID: 50fe5cf5dc6f4070a11c869cd4ec0138
-    Title: My CLI Joplin dream
-    ParentID: 1d4c4899bc7d4df4ad45cd575ac30043
-    CreatedTime: 1681088397617
-    UpdatedTime: 1681088397617
-    Source: joplin-desktop
-    ---
-    Begins today :D
 
 Delete a note:
 
@@ -83,6 +112,7 @@ Then `go run main.go` should work
  * Can fetch the all-notes list and inspect individual notes
  * Can create items like notes, folders, tags
  * Can delete items like notes, folders, tags
+ * Can create resources / upload files by name
 
 ## TODO
 
