@@ -1,9 +1,9 @@
 # Joplin Butler: CLI Joplin Automation Tools
 
-<img width="400" src="https://github.com/Garoth/joplin-butler/blob/master/docs/img/note-butler-ai?raw=true" />
+<img width="400" src="https://github.com/Garoth/joplin-butler/blob/master/docs/img/note-butler-ai.png?raw=true" />
 (Yes it's Midjourney art of a note taking butler :p)
 
-WARNING: Beta version of the codebase
+WARNING: Beta version of the codebase. I use it on my notes directly, but maybe do a backup
 
 This provides a convenient wrapper around the Joplin WebClipper/Data Service:
 https://joplinapp.org/api/references/rest_api/
