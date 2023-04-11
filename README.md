@@ -52,7 +52,7 @@ Create a note with title, resource, notebook (parent folder), and markdown body:
 
 The above code created the following note in Joplin Desktop instantly:
 
-![sample-note-1](https://github.com/Garoth/joplin-butler/blob/master/docs/img/demo-note-1.png?raw=true|width=300)
+![sample-note-1](https://github.com/Garoth/joplin-butler/blob/master/docs/img/demo-note-1.png?raw=true | width=300)
 
 Here we read the first two notes in the note list, and download detailed
 versions of the notes that show metadata and content
