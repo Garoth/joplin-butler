@@ -8,6 +8,7 @@ import (
 	"os"
 	"strings"
 	"path"
+	"io"
 
 	"github.com/Garoth/joplin-butler/endpoints"
 	"github.com/Garoth/joplin-butler/types"
@@ -99,19 +100,30 @@ func main() {
 
 		switch itemTypeID {
 		case types.ItemTypeNote:
-			dataJson := fmt.Sprintf("{ \"title\": \"%s\"", itemName)
-			if *createBody != "" {
-				dataJson += ", \"body\": \"" + *createBody + "\""
+			data := types.Note{
+				Title:    itemName,
+				ParentID: *createParent,
+				Body: *createBody,
+				BodyHTML: *createHTMLBody,
 			}
-			if *createHTMLBody != "" {
-				dataJson += ", \"body_html\": \"" + *createHTMLBody + "\""
-			}
-			if *createParent != "" {
-				dataJson += ", \"parent_id\": \"" + *createParent + "\""
-			}
-			dataJson += " }"
 
-			res, err := utils.PostPath("notes", dataJson)
+			// Standard input handling
+			bodyBytes, err := io.ReadAll(os.Stdin)
+			if err != nil {
+				log.Fatalln("ERR: could not read from standard input")
+			}
+			// TODO:lung:2023-04-14 missing a flag to switch stdin input mode
+			// from markdown to html or other formats
+			if len(bodyBytes) > 0 {
+				data.Body = string(bodyBytes)
+			}
+
+			dataJson, err := json.Marshal(&data)
+			if err != nil {
+				log.Fatalln("ERR: marshaling note body:", err)
+			}
+
+			res, err := utils.PostPath("notes", string(dataJson))
 			err = types.CheckError(res, err)
 			if err != nil {
 				log.Fatalln("ERR:", err)
@@ -293,3 +305,4 @@ func queryItemType(itemTypeID types.ItemTypeID,
 
 	return allItems, nil
 }
+
